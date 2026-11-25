@@ -3,7 +3,7 @@
 Webová aplikace pro evidenci skladových zásob a prodeje drceného polystyrenu v objemech 0,5 m³ (pytlích).
 
 ## 🚀 Živá aplikace (GitHub Pages)
-Aplikace běží přímo v prohlížeči přes GitHub Pages.
+👉 **[https://bildooo.github.io/polystyren-app/](https://bildooo.github.io/polystyren-app/)**
 
 ## 👥 Uživatelé a přihlašovací údaje
 
