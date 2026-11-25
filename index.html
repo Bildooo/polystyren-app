@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evidence Polystyrenu</title>
+  <style>
+    /* ========== RESET & ROOT ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --white:   #ffffff;
+      --offwhite:#f4f7fb;
+      --blue-50: #e8f0fe;
+      --blue-100:#c5d8fc;
+      --blue-300:#5b9af5;
+      --blue-500:#1a6fe8;
+      --blue-700:#1250b0;
+      --blue-900:#0a2d6e;
+      --black:   #0d0d0d;
+      --gray-200:#e2e8f0;
+      --gray-500:#64748b;
+      --gray-700:#374151;
+      --success: #16a34a;
+      --warn:    #d97706;
+      --danger:  #dc2626;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+      --shadow-md: 0 4px 16px rgba(10,45,110,.12);
+      --shadow-lg: 0 8px 32px rgba(10,45,110,.16);
+      --radius:  12px;
+      --radius-sm: 8px;
+    }
+    html, body {
+      height: 100%; font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--offwhite); color: var(--gray-700);
+    }
+
+    /* ========== LOGIN ========== */
+    #loginPage {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 50%, var(--blue-500) 100%);
+    }
+    .login-card {
+      background: var(--white); border-radius: 20px;
+      padding: 48px 44px; width: 100%; max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      animation: fadeUp .4s ease;
+    }
+    .login-logo {
+      text-align: center; margin-bottom: 28px;
+    }
+    .login-logo .icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+      margin-bottom: 14px;
+    }
+    .login-logo .icon svg { width: 38px; height: 38px; fill: var(--white); }
+    .login-logo h1 { font-size: 1.5rem; font-weight: 700; color: var(--blue-900); }
+    .login-logo p  { font-size: .88rem; color: var(--gray-500); margin-top: 4px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; font-size: .82rem; font-weight: 600;
+      color: var(--gray-700); margin-bottom: 6px; letter-spacing: .03em;
+    }
+    .form-group input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm); font-size: .95rem;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      background: var(--offwhite);
+    }
+    .form-group input:focus {
+      border-color: var(--blue-500); box-shadow: 0 0 0 3px var(--blue-50);
+      background: var(--white);
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 22px; border: none; border-radius: var(--radius-sm);
+      font-size: .93rem; font-weight: 600; cursor: pointer;
+      transition: transform .15s, box-shadow .15s, background .2s;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+      color: var(--white); width: 100%; font-size: 1rem; padding: 13px;
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, var(--blue-900), var(--blue-700)); }
+    .btn-success { background: var(--success); color: var(--white); }
+    .btn-warn    { background: var(--warn);    color: var(--white); }
+    .btn-danger  { background: var(--danger);  color: var(--white); }
+    .btn-outline {
+      background: var(--white); color: var(--blue-700);
+      border: 1.5px solid var(--blue-300);
+    }
+    .btn-outline:hover { background: var(--blue-50); }
+    .btn-sm { padding: 7px 14px; font-size: .82rem; }
+    .error-msg {
+      background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      font-size: .86rem; margin-bottom: 16px; display: none;
+    }
+
+    /* ========== APP SHELL ========== */
+    #app { display: none; min-height: 100vh; flex-direction: column; }
+    header {
+      background: linear-gradient(90deg, var(--blue-900), var(--blue-700));
+      color: var(--white); padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100;
+    }
+    .header-brand { display: flex; align-items: center; gap: 12px; }
+    .header-brand svg { width: 28px; height: 28px; fill: var(--blue-100); }
+    .header-brand span { font-size: 1.1rem; font-weight: 700; letter-spacing: .02em; }
+    .header-user { display: flex; align-items: center; gap: 14px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--blue-500); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .95rem; border: 2px solid var(--blue-100);
+    }
+    .user-name { font-size: .9rem; font-weight: 600; }
+    .user-role { font-size: .75rem; color: var(--blue-100); }
+    .btn-logout {
+      background: rgba(255,255,255,.12); color: var(--white);
+      border: 1px solid rgba(255,255,255,.25); padding: 7px 16px;
+      border-radius: var(--radius-sm); font-size: .82rem; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,.22); }
+
+    /* ========== NAV TABS ========== */
+    .nav-tabs {
+      background: var(--white); border-bottom: 2px solid var(--gray-200);
+      display: flex; padding: 0 28px; gap: 2px;
+    }
+    .nav-tab {
+      padding: 14px 22px; font-size: .88rem; font-weight: 600;
+      color: var(--gray-500); cursor: pointer; border-bottom: 3px solid transparent;
+      margin-bottom: -2px; transition: color .2s, border-color .2s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .nav-tab:hover { color: var(--blue-700); }
+    .nav-tab.active { color: var(--blue-700); border-bottom-color: var(--blue-500); }
+
+    /* ========== MAIN CONTENT ========== */
+    main { flex: 1; padding: 32px 28px; max-width: 1100px; margin: 0 auto; width: 100%; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .section-title {
+      font-size: 1.3rem; font-weight: 700; color: var(--blue-900);
+      margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-title svg { width: 24px; height: 24px; fill: var(--blue-500); }
+
+    /* ========== CARDS ========== */
+    .card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow-sm); padding: 24px;
+      border: 1px solid var(--gray-200);
+    }
+    .card + .card { margin-top: 20px; }
+    .card-title {
+      font-size: 1rem; font-weight: 700; color: var(--blue-900);
+      margin-bottom: 16px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-title-left { display: flex; align-items: center; gap: 8px; }
+
+    /* ========== STAT BOXES ========== */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px; margin-bottom: 28px;
+    }
+    .stat-box {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid var(--gray-200); padding: 22px 20px;
+      box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px;
+    }
+    .stat-box .label { font-size: .78rem; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: .06em; }
+    .stat-box .value { font-size: 2rem; font-weight: 800; color: var(--blue-700); line-height: 1; }
+    .stat-box .sub   { font-size: .82rem; color: var(--gray-500); }
+    .stat-box.accent { background: linear-gradient(135deg, var(--blue-700), var(--blue-500)); border: none; }
+    .stat-box.accent .label, .stat-box.accent .sub { color: var(--blue-100); }
+    .stat-box.accent .value { color: var(--white); }
+
+    /* ========== SELLER WAREHOUSE CARDS ========== */
+    .sellers-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .seller-card {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid var(--gray-200); padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .seller-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .seller-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1rem; color: var(--white);
+    }
+    .av-robert  { background: linear-gradient(135deg,#1a6fe8,#5b9af5); }
+    .av-martin  { background: linear-gradient(135deg,#1250b0,#1a6fe8); }
+    .av-tomas   { background: linear-gradient(135deg,#0a2d6e,#1250b0); }
+    .av-tomášp  { background: linear-gradient(135deg,#0d7a5f,#16a34a); }
+    .seller-name { font-weight: 700; color: var(--blue-900); font-size: 1rem; }
+    .seller-role { font-size: .78rem; color: var(--gray-500); }
+    .stock-display {
+      text-align: center; padding: 16px;
+      background: var(--blue-50); border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+    }
+    .stock-number { font-size: 2.4rem; font-weight: 800; color: var(--blue-700); }
+    .stock-unit   { font-size: .82rem; color: var(--gray-500); margin-top: 2px; }
+    .pending-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+      border-radius: 20px; padding: 4px 10px; font-size: .78rem; font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .confirmed-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #dcfce7; color: #166534; border: 1px solid #86efac;
+      border-radius: 20px; padding: 4px 10px; font-size: .78rem; font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .input-row {
+      display: flex; gap: 8px; margin-bottom: 10px;
+    }
+    .input-row input {
+      flex: 1; padding: 9px 12px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm); font-size: .9rem; outline: none;
+      transition: border-color .2s;
+    }
+    .input-row input:focus { border-color: var(--blue-500); }
+
+    /* ========== SELL SECTION ========== */
+    .sell-form {
+      display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .sell-form .fg { display: flex; flex-direction: column; gap: 5px; }
+    .sell-form label { font-size: .8rem; font-weight: 600; color: var(--gray-500); }
+    .sell-form input {
+      padding: 9px 12px; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm); font-size: .9rem; outline: none;
+      transition: border-color .2s;
+    }
+    .sell-form input:focus { border-color: var(--blue-500); }
+
+    /* ========== TABLE ========== */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--gray-200); }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    thead { background: var(--blue-900); color: var(--white); }
+    thead th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: .8rem; letter-spacing: .04em; }
+    tbody tr { border-bottom: 1px solid var(--gray-200); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--blue-50); }
+    tbody td { padding: 11px 16px; color: var(--gray-700); }
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: .75rem; font-weight: 600;
+    }
+    .badge-blue { background: var(--blue-50); color: var(--blue-700); }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-orange { background: #fef3c7; color: #92400e; }
+
+    /* ========== ADMIN SECTION ========== */
+    .admin-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    /* ========== NOTIFICATIONS ========== */
+    .notify-area { margin-bottom: 24px; }
+    .notify-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: var(--radius-sm);
+      margin-bottom: 10px; border: 1px solid;
+    }
+    .notify-warn { background: #fef3c7; border-color: #fcd34d; color: #78350f; }
+    .notify-info { background: var(--blue-50); border-color: var(--blue-100); color: var(--blue-900); }
+    .notify-title { font-weight: 700; margin-bottom: 2px; }
+    .notify-desc  { font-size: .85rem; }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeUp .3s ease; }
+
+    /* ========== TOAST ========== */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      background: var(--blue-900); color: var(--white);
+      padding: 14px 20px; border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg); font-size: .88rem; font-weight: 500;
+      max-width: 320px; animation: fadeUp .3s ease;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error   { background: var(--danger);  }
+    .toast.warn    { background: var(--warn);     }
+
+    /* ========== DIVIDER ========== */
+    .divider { height: 1px; background: var(--gray-200); margin: 20px 0; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      main   { padding: 20px 16px; }
+      .nav-tabs { padding: 0 12px; overflow-x: auto; }
+      .nav-tab { padding: 12px 14px; white-space: nowrap; }
+    }
+
+    .empty-state {
+      text-align: center; padding: 40px 20px; color: var(--gray-500);
+    }
+    .empty-state svg { width: 48px; height: 48px; fill: var(--gray-200); margin-bottom: 12px; }
+    .empty-state p { font-size: .9rem; }
+
+    /* Warehouse delivery confirm UI */
+    .delivery-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-radius: var(--radius-sm);
+      background: #fef3c7; border: 1px solid #fcd34d;
+      margin-bottom: 10px;
+    }
+    .delivery-item .di-info { font-size: .88rem; color: #78350f; }
+    .delivery-item .di-info strong { display: block; font-size: .95rem; color: var(--black); }
+    .delivery-item .di-actions { display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+
+<!-- =========== LOGIN PAGE =========== -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm0 12H4V9h16v10zM3 3h18v2H3z"/></svg>
+      </div>
+      <h1>Evidence Polystyrenu</h1>
+      <p>Systém správy skladu a prodeje</p>
+    </div>
+    <div id="loginError" class="error-msg">❌ Nesprávné jméno nebo heslo.</div>
+    <div class="form-group">
+      <label>Uživatelské jméno</label>
+      <input id="loginName" type="text" placeholder="Zadejte jméno…" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label>Heslo</label>
+      <input id="loginPass" type="password" placeholder="Zadejte heslo…" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">Přihlásit se</button>
+  </div>
+</div>
+
+<!-- =========== APP SHELL =========== -->
+<div id="app">
+  <header>
+    <div class="header-brand">
+      <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm0 12H4V9h16v10zM3 3h18v2H3z"/></svg>
+      <span>Evidence Polystyrenu</span>
+    </div>
+    <div class="header-user">
+      <div>
+        <div class="user-name" id="headerName"></div>
+        <div class="user-role" id="headerRole"></div>
+      </div>
+      <div class="avatar" id="headerAvatar"></div>
+      <button class="btn-logout" onclick="doLogout()">Odhlásit</button>
+    </div>
+  </header>
+
+  <div class="nav-tabs" id="navTabs"></div>
+
+  <main>
+    <!-- === DASHBOARD === -->
+    <div id="secDashboard" class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg>
+        Přehled
+      </div>
+      <div class="stats-grid" id="dashStats"></div>
+      <div id="dashNotifications" class="notify-area"></div>
+      <div id="dashDeliveries"></div>
+    </div>
+
+    <!-- === SKLAD (Tomáš – přidávání pytlů) === -->
+    <div id="secWarehouse" class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24"><path d="M22 9V7h-2V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14z"/></svg>
+        Správa skladu
+      </div>
+      <div class="sellers-grid" id="warehouseCards"></div>
+    </div>
+
+    <!-- === PRODEJ === -->
+    <div id="secSell" class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM3 2H1v2h2l3.6 7.59L5.25 14A2 2 0 0 0 7 17h14v-2H7.42l1.1-2H17a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 21.46 4H5.21l-.94-2H3z"/></svg>
+        Prodej pytlů
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-left">📦 Nový prodej</div>
+          <div id="sellStockInfo" style="font-size:.85rem;color:var(--gray-500);font-weight:400;"></div>
+        </div>
+        <div class="sell-form">
+          <div class="fg">
+            <label>Počet pytlů</label>
+            <input id="sellQty" type="number" min="1" placeholder="Počet" style="width:120px;" />
+          </div>
+          <div class="fg">
+            <label>Datum prodeje</label>
+            <input id="sellDate" type="date" />
+          </div>
+          <button class="btn btn-primary" onclick="doSell()">✓ Prodat</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px;">
+        <div class="card-title">📋 Historie prodejů</div>
+        <div id="sellHistory"></div>
+      </div>
+    </div>
+
+    <!-- === KASA === -->
+    <div id="secCash" class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        Kasa &amp; Tržby
+      </div>
+      <div id="cashContent"></div>
+    </div>
+
+    <!-- === ADMIN === -->
+    <div id="secAdmin" class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        Administrace
+      </div>
+      <div id="adminContent"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- =========== JAVASCRIPT =========== -->
+<script>
+// ==========================================
+//  DATA LAYER  –  localStorage persistence
+// ==========================================
+const USERS = {
+  'Robert':  { password: '1111', role: 'seller' },
+  'Martin':  { password: '1234', role: 'seller' },
+  'TomášP':  { password: '1478', role: 'seller' },
+  'Tomáš':   { password: '9876', role: 'warehouse' },
+  'Petr':    { password: '1973', role: 'admin' },
+};
+const SELLERS = ['Robert', 'Martin', 'TomášP'];
+const PRICE_PER_BAG = 600;
+
+function getData() {
+  const raw = localStorage.getItem('polyData');
+  const d = raw ? JSON.parse(raw) : {};
+  d.stocks = d.stocks || {};
+  d.cash = d.cash || {};
+  SELLERS.forEach(s => {
+    if (d.stocks[s] === undefined) d.stocks[s] = 0;
+    if (d.cash[s] === undefined) d.cash[s] = 0;
+  });
+  d.pendingDeliveries = d.pendingDeliveries || [];
+  d.sales = d.sales || [];
+  return d;
+}
+function saveData(d) { localStorage.setItem('polyData', JSON.stringify(d)); }
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ==========================================
+//  SESSION
+// ==========================================
+let currentUser = null;
+function getInitials(name) { return name.slice(0,1).toUpperCase(); }
+function getRoleLabel(role) {
+  return { seller:'Prodejce', warehouse:'Skladník', admin:'Administrátor' }[role] || role;
+}
+
+// ==========================================
+//  LOGIN / LOGOUT
+// ==========================================
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogin() {
+  const name = document.getElementById('loginName').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const err  = document.getElementById('loginError');
+  const user = USERS[name];
+  if (!user || user.password !== pass) {
+    err.style.display = 'block';
+    document.getElementById('loginPass').value = '';
+    return;
+  }
+  err.style.display = 'none';
+  currentUser = { name, ...user };
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+  document.getElementById('headerName').textContent = name;
+  document.getElementById('headerRole').textContent = getRoleLabel(user.role);
+  document.getElementById('headerAvatar').textContent = getInitials(name);
+  buildNav();
+  showSection('secDashboard');
+}
+function doLogout() {
+  currentUser = null;
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// ==========================================
+//  NAVIGATION
+// ==========================================
+const NAV_CONFIG = {
+  secDashboard: { label: 'Přehled', icon: '📊', roles: ['seller','warehouse','admin'] },
+  secWarehouse: { label: 'Správa skladu', icon: '🏭', roles: ['warehouse','admin'] },
+  secSell:      { label: 'Prodej', icon: '🛒', roles: ['seller'] },
+  secCash:      { label: 'Kasa', icon: '💰', roles: ['seller','admin'] },
+  secAdmin:     { label: 'Admin panel', icon: '⚙️', roles: ['admin'] },
+};
+
+function buildNav() {
+  const nav = document.getElementById('navTabs');
+  nav.innerHTML = '';
+  Object.entries(NAV_CONFIG).forEach(([id, cfg]) => {
+    if (!cfg.roles.includes(currentUser.role)) return;
+    const tab = document.createElement('div');
+    tab.className = 'nav-tab';
+    tab.dataset.sec = id;
+    tab.innerHTML = `${cfg.icon} ${cfg.label}`;
+    tab.onclick = () => showSection(id);
+    nav.appendChild(tab);
+  });
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.sec === id);
+  });
+  document.getElementById(id).classList.add('active');
+  renderSection(id);
+}
+
+function renderSection(id) {
+  if (id === 'secDashboard')  renderDashboard();
+  if (id === 'secWarehouse')  renderWarehouse();
+  if (id === 'secSell')       renderSell();
+  if (id === 'secCash')       renderCash();
+  if (id === 'secAdmin')      renderAdmin();
+}
+
+// ==========================================
+//  DASHBOARD
+// ==========================================
+function renderDashboard() {
+  const d = getData();
+  const role = currentUser.role;
+
+  // ---- Stats ----
+  let stats = '';
+  if (role === 'admin') {
+    const totalStock = SELLERS.reduce((sum, s) => sum + (d.stocks[s] || 0), 0);
+    const totalSales = d.sales.reduce((s,x)=>s+x.qty,0);
+    const totalRev   = d.sales.reduce((s,x)=>s+x.revenue,0);
+    const pending    = d.pendingDeliveries.filter(x=>x.status==='pending').length;
+    stats = `
+      <div class="stat-box accent"><div class="label">Celkový sklad</div><div class="value">${totalStock}</div><div class="sub">pytlů na skladě</div></div>
+      <div class="stat-box"><div class="label">Celkové prodeje</div><div class="value">${totalSales}</div><div class="sub">pytlů prodáno</div></div>
+      <div class="stat-box"><div class="label">Celkové tržby</div><div class="value">${totalRev.toLocaleString('cs')}</div><div class="sub">Kč</div></div>
+      <div class="stat-box"><div class="label">Čekající dodávky</div><div class="value">${pending}</div><div class="sub">k potvrzení</div></div>
+    `;
+  } else if (role === 'warehouse') {
+    const totalStock = SELLERS.reduce((sum, s) => sum + (d.stocks[s] || 0), 0);
+    const pending    = d.pendingDeliveries.filter(x=>x.status==='pending').length;
+    const sellerBoxes = SELLERS.map(s => `
+      <div class="stat-box"><div class="label">Sklad ${s}</div><div class="value">${d.stocks[s] || 0}</div><div class="sub">pytlů</div></div>
+    `).join('');
+    stats = `
+      <div class="stat-box accent"><div class="label">Sklad celkem</div><div class="value">${totalStock}</div><div class="sub">pytlů na skladě</div></div>
+      ${sellerBoxes}
+      <div class="stat-box"><div class="label">Čekající potvrzení</div><div class="value">${pending}</div><div class="sub">dodávek</div></div>
+    `;
+  } else {
+    // seller
+    const name = currentUser.name;
+    const myStock = d.stocks[name] || 0;
+    const mySales = d.sales.filter(s=>s.seller===name);
+    const myCash  = d.cash[name] || 0;
+    const myPending = d.pendingDeliveries.filter(x=>x.seller===name&&x.status==='pending').length;
+    stats = `
+      <div class="stat-box accent"><div class="label">Můj sklad</div><div class="value">${myStock}</div><div class="sub">pytlů k prodeji</div></div>
+      <div class="stat-box"><div class="label">Prodáno celkem</div><div class="value">${mySales.reduce((s,x)=>s+x.qty,0)}</div><div class="sub">pytlů</div></div>
+      <div class="stat-box"><div class="label">Moje kasa</div><div class="value">${myCash.toLocaleString('cs')}</div><div class="sub">Kč</div></div>
+      <div class="stat-box"><div class="label">K potvrzení</div><div class="value">${myPending}</div><div class="sub">dodávek čeká</div></div>
+    `;
+  }
+  document.getElementById('dashStats').innerHTML = stats;
+
+  // ---- Notifications ----
+  let notifs = '';
+  if (role === 'seller') {
+    const pending = d.pendingDeliveries.filter(x=>x.seller===currentUser.name&&x.status==='pending');
+    pending.forEach(p => {
+      notifs += `
+        <div class="notify-item notify-warn">
+          <div>🔔</div>
+          <div>
+            <div class="notify-title">Čeká na potvrzení</div>
+            <div class="notify-desc">Tomáš přidal ${p.qty} pytl${pytle(p.qty)} na Váš sklad dne ${fmtDate(p.addedAt)}. Prosím potvrďte nebo zamítněte.</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;">
+            <button class="btn btn-success btn-sm" onclick="confirmDelivery('${p.id}',true)">✓ Potvrdit</button>
+            <button class="btn btn-danger  btn-sm" onclick="confirmDelivery('${p.id}',false)">✗ Zamítnout</button>
+          </div>
+        </div>`;
+    });
+  }
+  document.getElementById('dashNotifications').innerHTML = notifs;
+
+  // ---- Recent deliveries on dashboard for Tomáš ----
+  let delivHtml = '';
+  if (role === 'warehouse') {
+    const recent = d.pendingDeliveries.slice(-5).reverse();
+    if (recent.length > 0) {
+      delivHtml = `<div class="card"><div class="card-title">📦 Poslední dodávky</div><div class="table-wrap"><table>
+        <thead><tr><th>Prodejce</th><th>Počet pytlů</th><th>Stav</th><th>Datum</th></tr></thead><tbody>
+        ${recent.map(p=>`<tr>
+          <td>${p.seller}</td><td>${p.qty}</td>
+          <td><span class="badge ${p.status==='pending'?'badge-orange':p.status==='confirmed'?'badge-green':'badge-blue'}">${statusLabel(p.status)}</span></td>
+          <td>${fmtDate(p.addedAt)}</td>
+        </tr>`).join('')}
+        </tbody></table></div></div>`;
+    }
+  }
+  if (role === 'admin') {
+    const recent = d.sales.slice(-5).reverse();
+    delivHtml = `<div class="card"><div class="card-title">📋 Poslední prodeje</div>
+      ${recent.length===0 ? '<p style="color:var(--gray-500);font-size:.9rem;">Zatím žádné prodeje.</p>' : `
+      <div class="table-wrap"><table>
+        <thead><tr><th>Prodejce</th><th>Pytlů</th><th>Tržba</th><th>Datum</th></tr></thead><tbody>
+        ${recent.map(s=>`<tr>
+          <td>${s.seller}</td><td>${s.qty}</td><td>${s.revenue.toLocaleString('cs')} Kč</td><td>${s.date}</td>
+        </tr>`).join('')}
+        </tbody></table></div>`}
+      </div>`;
+  }
+  document.getElementById('dashDeliveries').innerHTML = delivHtml;
+}
+
+// ==========================================
+//  WAREHOUSE (Tomáš)
+// ==========================================
+function renderWarehouse() {
+  const d = getData();
+  let html = '';
+  const sellers = currentUser.role === 'admin' ? SELLERS : SELLERS;
+  sellers.forEach(seller => {
+    const avClass = 'av-' + seller.toLowerCase();
+    const pending = d.pendingDeliveries.filter(x=>x.seller===seller&&x.status==='pending');
+    const pendingTotal = pending.reduce((s,x)=>s+x.qty,0);
+    html += `
+      <div class="seller-card fade-in">
+        <div class="seller-header">
+          <div class="seller-avatar ${avClass}">${getInitials(seller)}</div>
+          <div>
+            <div class="seller-name">${seller}</div>
+            <div class="seller-role">Prodejce</div>
+          </div>
+        </div>
+        <div class="stock-display">
+          <div class="stock-number">${d.stocks[seller]}</div>
+          <div class="stock-unit">pytlů na skladě (potvrzeno)</div>
+        </div>
+        ${pendingTotal > 0 ? `<div class="pending-badge">⏳ Čeká na potvrzení: ${pendingTotal} pytlů</div>` : ''}
+        ${currentUser.role === 'warehouse' ? `
+        <div class="input-row">
+          <input id="addQty_${seller}" type="number" min="1" placeholder="Počet pytlů k přidání" />
+          <button class="btn btn-primary btn-sm" onclick="addToWarehouse('${seller}')">+ Přidat</button>
+        </div>` : ''}
+        <div style="font-size:.82rem;color:var(--gray-500);margin-top:4px;">
+          ${pending.length} dodávk${dodavky(pending.length)} čeká na potvrzení prodejcem
+        </div>
+      </div>`;
+  });
+  document.getElementById('warehouseCards').innerHTML = html;
+}
+
+function addToWarehouse(seller) {
+  const inp = document.getElementById(`addQty_${seller}`);
+  const qty = parseInt(inp.value);
+  if (!qty || qty < 1) { showToast('Zadejte platný počet pytlů.', 'error'); return; }
+  const d = getData();
+  d.pendingDeliveries.push({
+    id: genId(), seller, qty,
+    addedBy: currentUser.name,
+    addedAt: new Date().toISOString(),
+    status: 'pending'
+  });
+  saveData(d);
+  inp.value = '';
+  showToast(`Přidáno ${qty} pytlů na sklad ${seller} – čeká na potvrzení.`, 'success');
+  renderWarehouse();
+}
+
+// ==========================================
+//  CONFIRM / REJECT DELIVERY (seller)
+// ==========================================
+function confirmDelivery(id, accept) {
+  const d = getData();
+  const delivery = d.pendingDeliveries.find(x=>x.id===id);
+  if (!delivery) return;
+  if (accept) {
+    delivery.status = 'confirmed';
+    d.stocks[delivery.seller] = (d.stocks[delivery.seller] || 0) + delivery.qty;
+    showToast(`✓ Potvrzeno: +${delivery.qty} pytlů přidáno na sklad.`, 'success');
+  } else {
+    delivery.status = 'rejected';
+    showToast(`✗ Dodávka ${delivery.qty} pytlů zamítnuta.`, 'warn');
+  }
+  saveData(d);
+  renderDashboard();
+}
+
+// ==========================================
+//  SELL
+// ==========================================
+function renderSell() {
+  if (currentUser.role !== 'seller') return;
+  const name = currentUser.name;
+  const d = getData();
+  const myStock = d.stocks[name] || 0;
+  document.getElementById('sellStockInfo').textContent = `Na skladě: ${myStock} pytlů`;
+  document.getElementById('sellDate').valueAsDate = new Date();
+
+  const mySales = d.sales.filter(s=>s.seller===name).slice().reverse();
+  const tbody = mySales.length === 0
+    ? `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg><p>Zatím žádné prodeje.</p></div>`
+    : `<div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Datum prodeje</th><th>Počet pytlů</th><th>Tržba</th><th>Zaznamenáno</th></tr></thead>
+        <tbody>${mySales.map((s,i)=>`<tr>
+          <td>${mySales.length-i}</td>
+          <td>${s.date}</td>
+          <td><span class="badge badge-blue">${s.qty} ks</span></td>
+          <td><strong>${s.revenue.toLocaleString('cs')} Kč</strong></td>
+          <td>${fmtDate(s.recordedAt)}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`;
+  document.getElementById('sellHistory').innerHTML = tbody;
+}
+
+function doSell() {
+  const name = currentUser.name;
+  const qty  = parseInt(document.getElementById('sellQty').value);
+  const date = document.getElementById('sellDate').value;
+  if (!qty || qty < 1) { showToast('Zadejte počet pytlů.', 'error'); return; }
+  if (!date) { showToast('Zadejte datum prodeje.', 'error'); return; }
+  const d = getData();
+  if ((d.stocks[name]||0) < qty) {
+    showToast(`Nedostatečný sklad! Na skladě máte jen ${d.stocks[name]||0} pytlů.`, 'error');
+    return;
+  }
+  const revenue = qty * PRICE_PER_BAG;
+  d.stocks[name] -= qty;
+  d.cash[name] = (d.cash[name]||0) + revenue;
+  d.sales.push({ id: genId(), seller: name, qty, date, revenue, recordedAt: new Date().toISOString() });
+  saveData(d);
+  document.getElementById('sellQty').value = '';
+  showToast(`✓ Prodej zaznamenán: ${qty} pytlů za ${revenue.toLocaleString('cs')} Kč`, 'success');
+  renderSell();
+}
+
+// ==========================================
+//  CASH
+// ==========================================
+function renderCash() {
+  const d = getData();
+  const role = currentUser.role;
+  let html = '';
+
+  const renderSellerCash = (seller) => {
+    const cash  = d.cash[seller] || 0;
+    const sales = d.sales.filter(s=>s.seller===seller).slice().reverse();
+    const totalQty = sales.reduce((s,x)=>s+x.qty,0);
+    return `
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">
+          <div class="card-title-left">
+            <div class="seller-avatar ${`av-${seller.toLowerCase()}`}" style="width:32px;height:32px;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;">${getInitials(seller)}</div>
+            ${seller}
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box accent"><div class="label">Kasa</div><div class="value">${cash.toLocaleString('cs')}</div><div class="sub">Kč celkem</div></div>
+          <div class="stat-box"><div class="label">Prodáno</div><div class="value">${totalQty}</div><div class="sub">pytlů celkem</div></div>
+          <div class="stat-box"><div class="label">Cena/pytel</div><div class="value">${PRICE_PER_BAG}</div><div class="sub">Kč</div></div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-weight:600;margin-bottom:12px;color:var(--blue-900);">📋 Přehled prodejů</div>
+        ${sales.length===0
+          ? '<p style="color:var(--gray-500);font-size:.9rem;">Zatím žádné prodeje.</p>'
+          : `<div class="table-wrap"><table>
+              <thead><tr><th>#</th><th>Datum</th><th>Pytlů</th><th>Tržba</th></tr></thead>
+              <tbody>${sales.map((s,i)=>`<tr>
+                <td>${sales.length-i}</td><td>${s.date}</td>
+                <td>${s.qty} ks</td>
+                <td><strong>${s.revenue.toLocaleString('cs')} Kč</strong></td>
+              </tr>`).join('')}</tbody>
+            </table></div>`}
+      </div>`;
+  };
+
+  if (role === 'admin') {
+    const totalCash = SELLERS.reduce((sum, s) => sum + (d.cash[s] || 0), 0);
+    html += `<div class="stats-grid" style="margin-bottom:24px;">
+      <div class="stat-box accent"><div class="label">Celková kasa</div><div class="value">${totalCash.toLocaleString('cs')}</div><div class="sub">Kč celkem</div></div>
+    </div>`;
+    SELLERS.forEach(s => { html += renderSellerCash(s); });
+  } else {
+    html = renderSellerCash(currentUser.name);
+  }
+  document.getElementById('cashContent').innerHTML = html;
+}
+
+// ==========================================
+//  ADMIN
+// ==========================================
+function renderAdmin() {
+  const d = getData();
+  const totalSales = d.sales.reduce((s,x)=>s+x.qty,0);
+  const totalRev   = d.sales.reduce((s,x)=>s+x.revenue,0);
+  const totalStock = SELLERS.reduce((sum, s) => sum + (d.stocks[s] || 0), 0);
+  const totalCash  = SELLERS.reduce((sum, s) => sum + (d.cash[s] || 0), 0);
+
+  let html = `
+    <div class="stats-grid">
+      <div class="stat-box accent"><div class="label">Celková kasa</div><div class="value">${totalCash.toLocaleString('cs')}</div><div class="sub">Kč</div></div>
+      <div class="stat-box"><div class="label">Celkový sklad</div><div class="value">${totalStock}</div><div class="sub">pytlů</div></div>
+      <div class="stat-box"><div class="label">Celkové prodeje</div><div class="value">${totalSales}</div><div class="sub">pytlů</div></div>
+    </div>
+
+    <div class="admin-grid" style="margin-top:24px;">
+      <div class="card">
+        <div class="card-title">👤 Stav prodejců</div>
+        ${SELLERS.map(s=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-200);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="seller-avatar av-${s.toLowerCase()}" style="width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-weight:700;">${getInitials(s)}</div>
+              <div>
+                <div style="font-weight:600;">${s}</div>
+                <div style="font-size:.78rem;color:var(--gray-500);">Prodejce</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;color:var(--blue-700);">${(d.cash[s]||0).toLocaleString('cs')} Kč</div>
+              <div style="font-size:.78rem;color:var(--gray-500);">sklad: ${d.stocks[s]||0} pytlů</div>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <div class="card">
+        <div class="card-title">📦 Všechny dodávky</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Prodejce</th><th>Pytlů</th><th>Stav</th><th>Datum</th></tr></thead>
+            <tbody>
+              ${d.pendingDeliveries.length===0
+                ? '<tr><td colspan="4" style="text-align:center;color:var(--gray-500);">Žádné dodávky.</td></tr>'
+                : d.pendingDeliveries.slice().reverse().map(p=>`<tr>
+                    <td>${p.seller}</td><td>${p.qty}</td>
+                    <td><span class="badge ${p.status==='pending'?'badge-orange':p.status==='confirmed'?'badge-green':'badge-blue'}">${statusLabel(p.status)}</span></td>
+                    <td>${fmtDate(p.addedAt)}</td>
+                  </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">📋 Všechny prodeje</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Prodejce</th><th>Pytlů</th><th>Tržba</th><th>Datum prodeje</th></tr></thead>
+          <tbody>
+            ${d.sales.length===0
+              ? '<tr><td colspan="5" style="text-align:center;color:var(--gray-500);">Žádné prodeje.</td></tr>'
+              : d.sales.slice().reverse().map((s,i)=>`<tr>
+                  <td>${d.sales.length-i}</td><td>${s.seller}</td><td>${s.qty}</td>
+                  <td><strong>${s.revenue.toLocaleString('cs')} Kč</strong></td><td>${s.date}</td>
+                </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;border-color:#fecaca;">
+      <div class="card-title" style="color:var(--danger);">⚠️ Správa dat</div>
+      <p style="font-size:.88rem;color:var(--gray-500);margin-bottom:16px;">Pozor: Níže lze smazat všechna data aplikace. Tato akce je nevratná!</p>
+      <button class="btn btn-danger" onclick="resetAll()">🗑 Smazat všechna data</button>
+    </div>`;
+  document.getElementById('adminContent').innerHTML = html;
+}
+
+function resetAll() {
+  if (!confirm('Opravdu chcete smazat VŠECHNA data? Tato akce je nevratná!')) return;
+  localStorage.removeItem('polyData');
+  showToast('Všechna data byla smazána.', 'warn');
+  renderAdmin();
+}
+
+// ==========================================
+//  HELPERS
+// ==========================================
+function fmtDate(iso) {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  return d.toLocaleDateString('cs-CZ', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+function statusLabel(s) {
+  return { pending:'Čeká', confirmed:'Potvrzeno', rejected:'Zamítnuto' }[s] || s;
+}
+function pytle(n) {
+  if (n===1) return '';
+  if (n>=2 && n<=4) return 'e';
+  return 'ů';
+}
+function dodavky(n) {
+  if (n===1) return 'a';
+  if (n>=2 && n<=4) return 'y';
+  return '';
+}
+
+// ==========================================
+//  TOAST
+// ==========================================
+function showToast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icon = type==='success'?'✓' : type==='error'?'✗' : type==='warn'?'⚠' : 'ℹ';
+  t.innerHTML = `<span>${icon}</span>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateY(8px)'; t.style.transition='all .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+</script>
+</body>
+</html>
